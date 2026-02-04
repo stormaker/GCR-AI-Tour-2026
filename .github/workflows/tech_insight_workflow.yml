@@ -83,6 +83,13 @@ jobs:
             exit 1
           fi
 
+      - name: Debug OIDC inputs (non-secret)
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "AZURE_CLIENT_ID=${AZURE_CLIENT_ID}"
+          echo "Expected subject: repo:${GITHUB_REPOSITORY}:ref:${GITHUB_REF}"
+
       - name: Azure login (OIDC)
         uses: azure/login@v2
         with:

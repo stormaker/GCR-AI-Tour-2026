@@ -276,14 +276,22 @@ PARAMS=$(cat <<JSON
 JSON
 )
 
-EXISTING=$(az ad app federated-credential list --id "$APP_ID" --query "[?name=='${FIC_NAME}'].name" -o tsv || true)
-if [[ -n "$EXISTING" ]]; then
-  echo "Federated credential exists; replacing: ${FIC_NAME}"
-  az ad app federated-credential delete --id "$APP_ID" --federated-credential-id "$FIC_NAME"
+# NOTE: delete expects the federated credential object's id, not the name.
+EXISTING_ID=$(az ad app federated-credential list --id "$APP_ID" --query "[?name=='${FIC_NAME}'].id | [0]" -o tsv 2>/dev/null || true)
+if [[ -n "$EXISTING_ID" && "$EXISTING_ID" != "null" ]]; then
+  echo "Federated credential exists; replacing: ${FIC_NAME} (id=${EXISTING_ID})"
+  az ad app federated-credential delete --id "$APP_ID" --federated-credential-id "$EXISTING_ID" -o none
 fi
 
 echo "Creating federated credential: ${FIC_NAME}"
 az ad app federated-credential create --id "$APP_ID" --parameters "$PARAMS" -o none
+
+echo
+echo "== Verify federated credential =="
+az ad app federated-credential list --id "$APP_ID" \
+  --query "[?name=='${FIC_NAME}'] | [0].{name:name,issuer:issuer,subject:subject,audiences:audiences,id:id}" \
+  -o jsonc || true
+echo "Expected subject: ${SUBJECT}"
 
 # RBAC
 HAS_ROLE=$(az role assignment list --assignee "$APP_ID" --scope "$SCOPE" --query "[?roleDefinitionName=='${ROLE_NAME}'] | length(@)" -o tsv || echo 0)

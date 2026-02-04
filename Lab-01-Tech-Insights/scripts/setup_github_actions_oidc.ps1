@@ -140,11 +140,11 @@ if ([string]::IsNullOrWhiteSpace($spObjId)) {
 $ficName = "github-$Owner-$Repo-$Branch"
 $subject = "repo:$Owner/$Repo:ref:refs/heads/$Branch"
 
-# Replace if exists
-$existing = (az ad app federated-credential list --id $appId --query "[?name=='$ficName'].name" -o tsv 2>$null).Trim()
-if (-not [string]::IsNullOrWhiteSpace($existing)) {
-  Write-Info "Federated credential exists; replacing: $ficName"
-  az ad app federated-credential delete --id $appId --federated-credential-id $ficName | Out-Null
+# Replace if exists (delete expects federated credential object id, not name)
+$existingId = (az ad app federated-credential list --id $appId --query "[?name=='$ficName'].id | [0]" -o tsv 2>$null).Trim()
+if (-not [string]::IsNullOrWhiteSpace($existingId) -and $existingId -ne "null") {
+  Write-Info "Federated credential exists; replacing: $ficName (id=$existingId)"
+  az ad app federated-credential delete --id $appId --federated-credential-id $existingId -o none | Out-Null
 }
 
 $tempPath = [System.IO.Path]::Combine([System.IO.Path]::GetTempPath(), "fic-$ficName.json")
@@ -163,6 +163,15 @@ try {
 } finally {
   Remove-Item -Force -ErrorAction SilentlyContinue $tempPath
 }
+
+Write-Info ""
+Write-Info "== Verify federated credential =="
+try {
+  az ad app federated-credential list --id $appId --query "[?name=='$ficName'] | [0].{name:name,issuer:issuer,subject:subject,audiences:audiences,id:id}" -o jsonc
+} catch {
+  # ignore
+}
+Write-Info "Expected subject: $subject"
 
 # RBAC
 $hasRole = (az role assignment list --assignee $appId --scope $scope --query "[?roleDefinitionName=='$Role'] | length(@)" -o tsv 2>$null).Trim()
