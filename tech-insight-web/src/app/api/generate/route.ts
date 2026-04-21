@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
+import { readFileSync } from "fs";
 import { join } from "path";
+import { put, list } from "@vercel/blob";
 
 const RSS_LIST = JSON.parse(
   readFileSync(join(process.cwd(), "public", "rss_list.json"), "utf-8")
@@ -265,16 +266,17 @@ ${topArticles.map((a, i) => `${i + 1}. [${a.platform}] ${a.title} (${a.url}) ${a
       report = generateFallbackReport(topArticles);
     }
 
-    const outputDir = join(process.cwd(), "public");
-    if (!existsSync(outputDir)) {
-      mkdirSync(outputDir, { recursive: true });
-    }
-    writeFileSync(join(outputDir, "report.md"), report, "utf-8");
+    // 使用 Vercel Blob 存储报告
+    const { url } = await put("report.md", report, {
+      access: "public",
+      contentType: "text/markdown",
+    });
 
     return NextResponse.json({
       success: true,
       articles: topArticles.length,
       reportLength: report.length,
+      blobUrl: url,
     });
   } catch (error: any) {
     return NextResponse.json(

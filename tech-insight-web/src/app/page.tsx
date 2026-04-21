@@ -1,16 +1,32 @@
-import { readFileSync } from "fs";
-import { join } from "path";
+"use client";
+
+import { useEffect, useState } from "react";
 import { marked } from "marked";
 
 export default function Home() {
-  let html = "";
-  try {
-    const mdPath = join(process.cwd(), "public", "report.md");
-    const markdown = readFileSync(mdPath, "utf-8");
-    html = marked.parse(markdown, { gfm: true }) as string;
-  } catch {
-    html = "<p>报告加载中...</p>";
-  }
+  const [html, setHtml] = useState<string>("<p>报告加载中...</p>");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadReport() {
+      try {
+        const res = await fetch("/api/report");
+        if (res.ok) {
+          const data = await res.json();
+          const rawHtml = marked.parse(data.content, { gfm: true }) as string;
+          setHtml(rawHtml);
+        } else {
+          setHtml("<p>报告尚未生成，请稍后访问。</p>");
+        }
+      } catch {
+        setHtml("<p>加载失败，请稍后重试。</p>");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadReport();
+  }, []);
 
   return (
     <>
@@ -26,6 +42,11 @@ export default function Home() {
       </header>
 
       <main className="mx-auto w-full max-w-[980px] px-4 py-6">
+        {loading && (
+          <div className="mb-4 rounded-xl border border-[#e7e4de] bg-white px-4 py-3 text-sm text-[#6b6760]">
+            正在加载报告...
+          </div>
+        )}
         <article
           className="markdown-body rounded-2xl border border-[#e7e4de] bg-white px-6 py-8 shadow-sm"
           dangerouslySetInnerHTML={{ __html: html }}
@@ -34,7 +55,7 @@ export default function Home() {
 
       <footer className="mt-auto border-t border-[#e7e4de] bg-white/70">
         <div className="mx-auto max-w-[980px] px-4 py-4 text-xs text-[#6b6760]">
-          静态渲染：Markdown → HTML（服务端渲染）
+          静态渲染：Markdown → HTML（客户端渲染）
         </div>
       </footer>
     </>
