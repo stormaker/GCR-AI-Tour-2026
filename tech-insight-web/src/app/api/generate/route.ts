@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readFileSync } from "fs";
 import { join } from "path";
+import { put } from "@vercel/blob";
 
 const RSS_LIST = JSON.parse(
   readFileSync(join(process.cwd(), "public", "rss_list.json"), "utf-8")
@@ -265,12 +266,17 @@ ${topArticles.map((a, i) => `${i + 1}. [${a.platform}] ${a.title} (${a.url}) ${a
       report = generateFallbackReport(topArticles);
     }
 
-    // 直接返回报告内容，不持久化存储
+    // 使用 Vercel Blob 存储报告
+    const { url } = await put("report.md", report, {
+      access: "public",
+      contentType: "text/markdown",
+    });
+
     return NextResponse.json({
       success: true,
       articles: topArticles.length,
       reportLength: report.length,
-      report,
+      blobUrl: url,
     });
   } catch (error: any) {
     return NextResponse.json(

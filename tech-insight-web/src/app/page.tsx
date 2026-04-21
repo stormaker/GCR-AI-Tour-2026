@@ -9,28 +9,39 @@ export default function Home() {
   const [generating, setGenerating] = useState(false);
 
   useEffect(() => {
-    generateReport();
+    loadReport();
   }, []);
+
+  async function loadReport() {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/report");
+      if (res.ok) {
+        const data = await res.json();
+        const rawHtml = marked.parse(data.content, { gfm: true }) as string;
+        setHtml(rawHtml);
+      } else {
+        setHtml("<p>报告尚未生成，请点击刷新按钮生成。</p>");
+      }
+    } catch {
+      setHtml("<p>加载失败，请稍后重试。</p>");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   async function generateReport() {
     try {
       setGenerating(true);
       const res = await fetch("/api/generate", { method: "POST" });
       if (res.ok) {
-        const data = await res.json();
-        if (data.report) {
-          const rawHtml = marked.parse(data.report, { gfm: true }) as string;
-          setHtml(rawHtml);
-        } else {
-          setHtml("<p>报告生成失败。</p>");
-        }
+        await loadReport();
       } else {
         setHtml("<p>报告生成失败，请稍后重试。</p>");
       }
     } catch {
-      setHtml("<p>加载失败，请稍后重试。</p>");
+      setHtml("<p>生成失败，请稍后重试。</p>");
     } finally {
-      setLoading(false);
       setGenerating(false);
     }
   }
@@ -60,7 +71,7 @@ export default function Home() {
       <main className="mx-auto w-full max-w-[980px] px-4 py-6">
         {loading && (
           <div className="mb-4 rounded-xl border border-[#e7e4de] bg-white px-4 py-3 text-sm text-[#6b6760]">
-            正在生成报告，请稍候...
+            正在加载报告...
           </div>
         )}
         <article
