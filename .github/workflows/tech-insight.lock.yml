@@ -1,4 +1,4 @@
-# gh-aw-metadata: {"schema_version":"v3","frontmatter_hash":"7e11d0ec0fc0a1dfbc8751162f3c8f302fe0db9b6c5feedb5c4b08deab728ded","compiler_version":"v0.68.3","agent_id":"copilot"}
+# gh-aw-metadata: {"schema_version":"v3","frontmatter_hash":"2c9b2994cb0e1b7f533c08c27c82e029cd2eb82e2df8ede7b05235c9ee7a80b3","compiler_version":"v0.68.3","agent_id":"copilot"}
 # gh-aw-manifest: {"version":1,"secrets":["COPILOT_GITHUB_TOKEN","GH_AW_CI_TRIGGER_TOKEN","GH_AW_GITHUB_MCP_SERVER_TOKEN","GH_AW_GITHUB_TOKEN","GITHUB_TOKEN"],"actions":[{"repo":"actions/checkout","sha":"de0fac2e4500dabe0009e67214ff5f5447ce83dd","version":"v6.0.2"},{"repo":"actions/download-artifact","sha":"3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c","version":"v8.0.1"},{"repo":"actions/github-script","sha":"373c709c69115d41ff229c7e5df9f8788daa9553","version":"v9"},{"repo":"actions/upload-artifact","sha":"043fb46d1a93c77aae656e7c1c64a875d1fc6a0a","version":"v7.0.1"},{"repo":"github/gh-aw-actions/setup","sha":"ba90f2186d7ad780ec640f364005fa24e797b360","version":"v0.68.3"}],"containers":[{"image":"ghcr.io/github/gh-aw-firewall/agent:0.25.20"},{"image":"ghcr.io/github/gh-aw-firewall/api-proxy:0.25.20"},{"image":"ghcr.io/github/gh-aw-firewall/squid:0.25.20"},{"image":"ghcr.io/github/gh-aw-mcpg:v0.2.19"},{"image":"ghcr.io/github/github-mcp-server:v0.32.0"},{"image":"node:lts-alpine"}]}
 #    ___                   _   _      
 #   / _ \                 | | (_)     
@@ -96,7 +96,7 @@ jobs:
           GH_AW_INFO_EXPERIMENTAL: "false"
           GH_AW_INFO_SUPPORTS_TOOLS_ALLOWLIST: "true"
           GH_AW_INFO_STAGED: "false"
-          GH_AW_INFO_ALLOWED_DOMAINS: '["defaults","python","openai.com","github.blog","devblogs.microsoft.com","blog.google","aws.amazon.com","blogs.nvidia.com","developer.apple.com","blog.cloudflare.com","deepmind.google","huggingface.co","news.ycombinator.com","www.producthunt.com","techcrunch.com","www.theverge.com","feeds.arstechnica.com","www.wired.com","www.technologyreview.com","feed.infoq.com","www.infoq.com","lobste.rs","dev.to"]'
+          GH_AW_INFO_ALLOWED_DOMAINS: '["defaults","python","openai.com","github.blog","devblogs.microsoft.com","blog.google","aws.amazon.com","blogs.nvidia.com","developer.apple.com","blog.cloudflare.com","deepmind.google","huggingface.co","news.ycombinator.com","www.producthunt.com","techcrunch.com","www.theverge.com","feeds.arstechnica.com","www.wired.com","www.technologyreview.com","feed.infoq.com","www.infoq.com","lobste.rs","dev.to","www.anthropic.com","claude.com"]'
           GH_AW_INFO_FIREWALL_ENABLED: "true"
           GH_AW_INFO_AWF_VERSION: "v0.25.20"
           GH_AW_INFO_AWMG_VERSION: ""
@@ -161,19 +161,19 @@ jobs:
         run: |
           bash "${RUNNER_TEMP}/gh-aw/actions/create_prompt_first.sh"
           {
-          cat << 'GH_AW_PROMPT_82303ee4592e67fc_EOF'
+          cat << 'GH_AW_PROMPT_78a3a0ef957750d5_EOF'
           <system>
-          GH_AW_PROMPT_82303ee4592e67fc_EOF
+          GH_AW_PROMPT_78a3a0ef957750d5_EOF
           cat "${RUNNER_TEMP}/gh-aw/prompts/xpia.md"
           cat "${RUNNER_TEMP}/gh-aw/prompts/temp_folder_prompt.md"
           cat "${RUNNER_TEMP}/gh-aw/prompts/markdown.md"
           cat "${RUNNER_TEMP}/gh-aw/prompts/safe_outputs_prompt.md"
-          cat << 'GH_AW_PROMPT_82303ee4592e67fc_EOF'
+          cat << 'GH_AW_PROMPT_78a3a0ef957750d5_EOF'
           <safe-output-tools>
           Tools: create_pull_request, missing_tool, missing_data, noop
-          GH_AW_PROMPT_82303ee4592e67fc_EOF
+          GH_AW_PROMPT_78a3a0ef957750d5_EOF
           cat "${RUNNER_TEMP}/gh-aw/prompts/safe_outputs_create_pull_request.md"
-          cat << 'GH_AW_PROMPT_82303ee4592e67fc_EOF'
+          cat << 'GH_AW_PROMPT_78a3a0ef957750d5_EOF'
           </safe-output-tools>
           <github-context>
           The following GitHub context information is available for this workflow:
@@ -203,12 +203,12 @@ jobs:
           {{/if}}
           </github-context>
           
-          GH_AW_PROMPT_82303ee4592e67fc_EOF
+          GH_AW_PROMPT_78a3a0ef957750d5_EOF
           cat "${RUNNER_TEMP}/gh-aw/prompts/github_mcp_tools_with_safeoutputs_prompt.md"
-          cat << 'GH_AW_PROMPT_82303ee4592e67fc_EOF'
+          cat << 'GH_AW_PROMPT_78a3a0ef957750d5_EOF'
           </system>
           {{#runtime-import .github/workflows/tech-insight.md}}
-          GH_AW_PROMPT_82303ee4592e67fc_EOF
+          GH_AW_PROMPT_78a3a0ef957750d5_EOF
           } > "$GH_AW_PROMPT"
       - name: Interpolate variables and render templates
         uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
@@ -375,9 +375,9 @@ jobs:
           mkdir -p "${RUNNER_TEMP}/gh-aw/safeoutputs"
           mkdir -p /tmp/gh-aw/safeoutputs
           mkdir -p /tmp/gh-aw/mcp-logs/safeoutputs
-          cat > "${RUNNER_TEMP}/gh-aw/safeoutputs/config.json" << 'GH_AW_SAFE_OUTPUTS_CONFIG_c580f321c1482354_EOF'
+          cat > "${RUNNER_TEMP}/gh-aw/safeoutputs/config.json" << 'GH_AW_SAFE_OUTPUTS_CONFIG_2ba56ce27404b585_EOF'
           {"create_pull_request":{"labels":["automation","tech-insight"],"max":1,"max_patch_size":1024,"protected_files":["package.json","bun.lockb","bunfig.toml","deno.json","deno.jsonc","deno.lock","global.json","NuGet.Config","Directory.Packages.props","mix.exs","mix.lock","go.mod","go.sum","stack.yaml","stack.yaml.lock","pom.xml","build.gradle","build.gradle.kts","settings.gradle","settings.gradle.kts","gradle.properties","package-lock.json","yarn.lock","pnpm-lock.yaml","npm-shrinkwrap.json","requirements.txt","Pipfile","Pipfile.lock","pyproject.toml","setup.py","setup.cfg","Gemfile","Gemfile.lock","uv.lock","CODEOWNERS"],"protected_path_prefixes":[".github/",".agents/"],"title_prefix":"[tech-insight] "},"create_report_incomplete_issue":{},"missing_data":{},"missing_tool":{},"noop":{"max":1,"report-as-issue":"true"},"report_incomplete":{}}
-          GH_AW_SAFE_OUTPUTS_CONFIG_c580f321c1482354_EOF
+          GH_AW_SAFE_OUTPUTS_CONFIG_2ba56ce27404b585_EOF
       - name: Write Safe Outputs Tools
         env:
           GH_AW_TOOLS_META_JSON: |
@@ -550,7 +550,7 @@ jobs:
       - name: Write MCP Scripts Config
         run: |
           mkdir -p "${RUNNER_TEMP}/gh-aw/mcp-scripts/logs"
-          cat > "${RUNNER_TEMP}/gh-aw/mcp-scripts/tools.json" << 'GH_AW_MCP_SCRIPTS_TOOLS_12ab64fe11a74472_EOF'
+          cat > "${RUNNER_TEMP}/gh-aw/mcp-scripts/tools.json" << 'GH_AW_MCP_SCRIPTS_TOOLS_f24b1bc5c6d906a7_EOF'
           {
             "serverName": "mcpscripts",
             "version": "1.0.0",
@@ -754,8 +754,8 @@ jobs:
               }
             ]
           }
-          GH_AW_MCP_SCRIPTS_TOOLS_12ab64fe11a74472_EOF
-          cat > "${RUNNER_TEMP}/gh-aw/mcp-scripts/mcp-server.cjs" << 'GH_AW_MCP_SCRIPTS_SERVER_7b25119d433c0f9d_EOF'
+          GH_AW_MCP_SCRIPTS_TOOLS_f24b1bc5c6d906a7_EOF
+          cat > "${RUNNER_TEMP}/gh-aw/mcp-scripts/mcp-server.cjs" << 'GH_AW_MCP_SCRIPTS_SERVER_695232592c62d744_EOF'
             const path = require("path");
             const { startHttpServer } = require("./mcp_scripts_mcp_server_http.cjs");
             const configPath = path.join(__dirname, "tools.json");
@@ -769,12 +769,12 @@ jobs:
               console.error("Failed to start mcp-scripts HTTP server:", error);
               process.exit(1);
             });
-          GH_AW_MCP_SCRIPTS_SERVER_7b25119d433c0f9d_EOF
+          GH_AW_MCP_SCRIPTS_SERVER_695232592c62d744_EOF
           chmod +x "${RUNNER_TEMP}/gh-aw/mcp-scripts/mcp-server.cjs"
           
       - name: Write MCP Scripts Tool Files
         run: |
-          cat > "${RUNNER_TEMP}/gh-aw/mcp-scripts/tech-cluster-or-fallback.sh" << 'GH_AW_MCP_SCRIPTS_SH_TECH-CLUSTER-OR-FALLBACK_bf2b2a849257bf37_EOF'
+          cat > "${RUNNER_TEMP}/gh-aw/mcp-scripts/tech-cluster-or-fallback.sh" << 'GH_AW_MCP_SCRIPTS_SH_TECH-CLUSTER-OR-FALLBACK_58355d5434d03fd9_EOF'
           #!/bin/bash
           # Auto-generated mcp-script tool: tech-cluster-or-fallback
           # Validate and fallback clustering results
@@ -785,9 +785,9 @@ jobs:
           echo "{\"raw_signals_json\": $(echo $INPUT_RAW_SIGNALS_JSON | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read()))'), \"clusters_json\": $(echo $INPUT_CLUSTERS_JSON | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read()))'), \"top_k\": ${INPUT_TOP_K:-12}}" | python3 Lab-01-Tech-Insights/mcp-scripts/tech_cluster_or_fallback.py
           
           
-          GH_AW_MCP_SCRIPTS_SH_TECH-CLUSTER-OR-FALLBACK_bf2b2a849257bf37_EOF
+          GH_AW_MCP_SCRIPTS_SH_TECH-CLUSTER-OR-FALLBACK_58355d5434d03fd9_EOF
           chmod +x "${RUNNER_TEMP}/gh-aw/mcp-scripts/tech-cluster-or-fallback.sh"
-          cat > "${RUNNER_TEMP}/gh-aw/mcp-scripts/tech-fetch-all-to-disk.sh" << 'GH_AW_MCP_SCRIPTS_SH_TECH-FETCH-ALL-TO-DISK_73f2a5343ee1d109_EOF'
+          cat > "${RUNNER_TEMP}/gh-aw/mcp-scripts/tech-fetch-all-to-disk.sh" << 'GH_AW_MCP_SCRIPTS_SH_TECH-FETCH-ALL-TO-DISK_bc720216e9767295_EOF'
           #!/bin/bash
           # Auto-generated mcp-script tool: tech-fetch-all-to-disk
           # Fetch all sources to disk in parallel
@@ -810,9 +810,9 @@ jobs:
           "
           
           
-          GH_AW_MCP_SCRIPTS_SH_TECH-FETCH-ALL-TO-DISK_73f2a5343ee1d109_EOF
+          GH_AW_MCP_SCRIPTS_SH_TECH-FETCH-ALL-TO-DISK_bc720216e9767295_EOF
           chmod +x "${RUNNER_TEMP}/gh-aw/mcp-scripts/tech-fetch-all-to-disk.sh"
-          cat > "${RUNNER_TEMP}/gh-aw/mcp-scripts/tech-insight-or-fallback.sh" << 'GH_AW_MCP_SCRIPTS_SH_TECH-INSIGHT-OR-FALLBACK_047f75e0e225bdae_EOF'
+          cat > "${RUNNER_TEMP}/gh-aw/mcp-scripts/tech-insight-or-fallback.sh" << 'GH_AW_MCP_SCRIPTS_SH_TECH-INSIGHT-OR-FALLBACK_d918e9b033cd86de_EOF'
           #!/bin/bash
           # Auto-generated mcp-script tool: tech-insight-or-fallback
           # Validate and fallback insight results
@@ -823,9 +823,9 @@ jobs:
           echo "{\"clusters_json\": $(echo $INPUT_CLUSTERS_JSON | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read()))'), \"insights_json\": $(echo $INPUT_INSIGHTS_JSON | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read()))') }" | python3 Lab-01-Tech-Insights/mcp-scripts/tech_insight_or_fallback.py
           
           
-          GH_AW_MCP_SCRIPTS_SH_TECH-INSIGHT-OR-FALLBACK_047f75e0e225bdae_EOF
+          GH_AW_MCP_SCRIPTS_SH_TECH-INSIGHT-OR-FALLBACK_d918e9b033cd86de_EOF
           chmod +x "${RUNNER_TEMP}/gh-aw/mcp-scripts/tech-insight-or-fallback.sh"
-          cat > "${RUNNER_TEMP}/gh-aw/mcp-scripts/tech-load-articles-from-disk.sh" << 'GH_AW_MCP_SCRIPTS_SH_TECH-LOAD-ARTICLES-FROM-DISK_e5ded1a4621d2fba_EOF'
+          cat > "${RUNNER_TEMP}/gh-aw/mcp-scripts/tech-load-articles-from-disk.sh" << 'GH_AW_MCP_SCRIPTS_SH_TECH-LOAD-ARTICLES-FROM-DISK_c29c9b7579a82318_EOF'
           #!/bin/bash
           # Auto-generated mcp-script tool: tech-load-articles-from-disk
           # Load and filter valid articles from disk
@@ -847,9 +847,9 @@ jobs:
           "
           
           
-          GH_AW_MCP_SCRIPTS_SH_TECH-LOAD-ARTICLES-FROM-DISK_e5ded1a4621d2fba_EOF
+          GH_AW_MCP_SCRIPTS_SH_TECH-LOAD-ARTICLES-FROM-DISK_c29c9b7579a82318_EOF
           chmod +x "${RUNNER_TEMP}/gh-aw/mcp-scripts/tech-load-articles-from-disk.sh"
-          cat > "${RUNNER_TEMP}/gh-aw/mcp-scripts/tech-read-source-list.sh" << 'GH_AW_MCP_SCRIPTS_SH_TECH-READ-SOURCE-LIST_66bbbbc728e5739d_EOF'
+          cat > "${RUNNER_TEMP}/gh-aw/mcp-scripts/tech-read-source-list.sh" << 'GH_AW_MCP_SCRIPTS_SH_TECH-READ-SOURCE-LIST_bd6787f24dc3e28e_EOF'
           #!/bin/bash
           # Auto-generated mcp-script tool: tech-read-source-list
           # Read RSS source list configuration
@@ -860,9 +860,9 @@ jobs:
           echo "{\"source_list_path\": \"$INPUT_SOURCE_LIST_PATH\"}" | python3 Lab-01-Tech-Insights/mcp-scripts/tech_read_source_list.py
           
           
-          GH_AW_MCP_SCRIPTS_SH_TECH-READ-SOURCE-LIST_66bbbbc728e5739d_EOF
+          GH_AW_MCP_SCRIPTS_SH_TECH-READ-SOURCE-LIST_bd6787f24dc3e28e_EOF
           chmod +x "${RUNNER_TEMP}/gh-aw/mcp-scripts/tech-read-source-list.sh"
-          cat > "${RUNNER_TEMP}/gh-aw/mcp-scripts/tech-render-report-or-fallback.sh" << 'GH_AW_MCP_SCRIPTS_SH_TECH-RENDER-REPORT-OR-FALLBACK_71db257e438ab29e_EOF'
+          cat > "${RUNNER_TEMP}/gh-aw/mcp-scripts/tech-render-report-or-fallback.sh" << 'GH_AW_MCP_SCRIPTS_SH_TECH-RENDER-REPORT-OR-FALLBACK_5e8f82d918a5b4dd_EOF'
           #!/bin/bash
           # Auto-generated mcp-script tool: tech-render-report-or-fallback
           # Validate and fallback report rendering
@@ -873,9 +873,9 @@ jobs:
           echo "{\"clusters_json\": $(echo $INPUT_CLUSTERS_JSON | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read()))'), \"insights_json\": $(echo $INPUT_INSIGHTS_JSON | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read()))'), \"draft_markdown\": $(echo $INPUT_DRAFT_MARKDOWN | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read()))')}" | python3 Lab-01-Tech-Insights/mcp-scripts/tech_render_report_or_fallback.py
           
           
-          GH_AW_MCP_SCRIPTS_SH_TECH-RENDER-REPORT-OR-FALLBACK_71db257e438ab29e_EOF
+          GH_AW_MCP_SCRIPTS_SH_TECH-RENDER-REPORT-OR-FALLBACK_5e8f82d918a5b4dd_EOF
           chmod +x "${RUNNER_TEMP}/gh-aw/mcp-scripts/tech-render-report-or-fallback.sh"
-          cat > "${RUNNER_TEMP}/gh-aw/mcp-scripts/write-text-file.sh" << 'GH_AW_MCP_SCRIPTS_SH_WRITE-TEXT-FILE_c4a7f79f6fe42b71_EOF'
+          cat > "${RUNNER_TEMP}/gh-aw/mcp-scripts/write-text-file.sh" << 'GH_AW_MCP_SCRIPTS_SH_WRITE-TEXT-FILE_bc8872e23e292167_EOF'
           #!/bin/bash
           # Auto-generated mcp-script tool: write-text-file
           # Write text content to a file
@@ -885,7 +885,7 @@ jobs:
           cd "$GITHUB_WORKSPACE"
           echo "{\"path\": \"$INPUT_PATH\", \"text\": $(echo $INPUT_TEXT | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read()))'), \"overwrite\": ${INPUT_OVERWRITE:-true}}" | python3 Lab-01-Tech-Insights/mcp-scripts/write_text_file.py
           
-          GH_AW_MCP_SCRIPTS_SH_WRITE-TEXT-FILE_c4a7f79f6fe42b71_EOF
+          GH_AW_MCP_SCRIPTS_SH_WRITE-TEXT-FILE_bc8872e23e292167_EOF
           chmod +x "${RUNNER_TEMP}/gh-aw/mcp-scripts/write-text-file.sh"
           
       - name: Generate MCP Scripts Server Config
@@ -950,7 +950,7 @@ jobs:
           export MCP_GATEWAY_DOCKER_COMMAND='docker run -i --rm --network host -v /var/run/docker.sock:/var/run/docker.sock -e MCP_GATEWAY_PORT -e MCP_GATEWAY_DOMAIN -e MCP_GATEWAY_API_KEY -e MCP_GATEWAY_PAYLOAD_DIR -e MCP_GATEWAY_PAYLOAD_SIZE_THRESHOLD -e DEBUG -e MCP_GATEWAY_LOG_DIR -e GH_AW_MCP_LOG_DIR -e GH_AW_SAFE_OUTPUTS -e GH_AW_SAFE_OUTPUTS_CONFIG_PATH -e GH_AW_SAFE_OUTPUTS_TOOLS_PATH -e GH_AW_ASSETS_BRANCH -e GH_AW_ASSETS_MAX_SIZE_KB -e GH_AW_ASSETS_ALLOWED_EXTS -e DEFAULT_BRANCH -e GITHUB_MCP_SERVER_TOKEN -e GITHUB_MCP_GUARD_MIN_INTEGRITY -e GITHUB_MCP_GUARD_REPOS -e GITHUB_REPOSITORY -e GITHUB_SERVER_URL -e GITHUB_SHA -e GITHUB_WORKSPACE -e GITHUB_TOKEN -e GITHUB_RUN_ID -e GITHUB_RUN_NUMBER -e GITHUB_RUN_ATTEMPT -e GITHUB_JOB -e GITHUB_ACTION -e GITHUB_EVENT_NAME -e GITHUB_EVENT_PATH -e GITHUB_ACTOR -e GITHUB_ACTOR_ID -e GITHUB_TRIGGERING_ACTOR -e GITHUB_WORKFLOW -e GITHUB_WORKFLOW_REF -e GITHUB_WORKFLOW_SHA -e GITHUB_REF -e GITHUB_REF_NAME -e GITHUB_REF_TYPE -e GITHUB_HEAD_REF -e GITHUB_BASE_REF -e GH_AW_MCP_SCRIPTS_PORT -e GH_AW_MCP_SCRIPTS_API_KEY -e GH_AW_SAFE_OUTPUTS_PORT -e GH_AW_SAFE_OUTPUTS_API_KEY -v /tmp/gh-aw/mcp-payloads:/tmp/gh-aw/mcp-payloads:rw -v /opt:/opt:ro -v /tmp:/tmp:rw -v '"${GITHUB_WORKSPACE}"':'"${GITHUB_WORKSPACE}"':rw ghcr.io/github/gh-aw-mcpg:v0.2.19'
           
           mkdir -p /home/runner/.copilot
-          cat << GH_AW_MCP_CONFIG_04d49aaa7ec2ebc3_EOF | bash "${RUNNER_TEMP}/gh-aw/actions/start_mcp_gateway.sh"
+          cat << GH_AW_MCP_CONFIG_22b568439273f5ae_EOF | bash "${RUNNER_TEMP}/gh-aw/actions/start_mcp_gateway.sh"
           {
             "mcpServers": {
               "github": {
@@ -1005,7 +1005,7 @@ jobs:
               "payloadDir": "${MCP_GATEWAY_PAYLOAD_DIR}"
             }
           }
-          GH_AW_MCP_CONFIG_04d49aaa7ec2ebc3_EOF
+          GH_AW_MCP_CONFIG_22b568439273f5ae_EOF
       - name: Download activation artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
@@ -1023,7 +1023,7 @@ jobs:
           touch /tmp/gh-aw/agent-step-summary.md
           (umask 177 && touch /tmp/gh-aw/agent-stdio.log)
           # shellcheck disable=SC1003
-          sudo -E awf --container-workdir "${GITHUB_WORKSPACE}" --mount "${RUNNER_TEMP}/gh-aw:${RUNNER_TEMP}/gh-aw:ro" --mount "${RUNNER_TEMP}/gh-aw:/host${RUNNER_TEMP}/gh-aw:ro" --env-all --exclude-env COPILOT_GITHUB_TOKEN --exclude-env GITHUB_MCP_SERVER_TOKEN --exclude-env MCP_GATEWAY_API_KEY --allow-domains '*.pythonhosted.org,anaconda.org,api.business.githubcopilot.com,api.enterprise.githubcopilot.com,api.github.com,api.githubcopilot.com,api.individual.githubcopilot.com,api.snapcraft.io,archive.ubuntu.com,aws.amazon.com,azure.archive.ubuntu.com,binstar.org,blog.cloudflare.com,blog.google,blogs.nvidia.com,bootstrap.pypa.io,conda.anaconda.org,conda.binstar.org,crates.io,crl.geotrust.com,crl.globalsign.com,crl.identrust.com,crl.sectigo.com,crl.thawte.com,crl.usertrust.com,crl.verisign.com,crl3.digicert.com,crl4.digicert.com,crls.ssl.com,deepmind.google,dev.to,devblogs.microsoft.com,developer.apple.com,feed.infoq.com,feeds.arstechnica.com,files.pythonhosted.org,github.blog,github.com,host.docker.internal,huggingface.co,index.crates.io,json-schema.org,json.schemastore.org,keyserver.ubuntu.com,lobste.rs,news.ycombinator.com,ocsp.digicert.com,ocsp.geotrust.com,ocsp.globalsign.com,ocsp.identrust.com,ocsp.sectigo.com,ocsp.ssl.com,ocsp.thawte.com,ocsp.usertrust.com,ocsp.verisign.com,openai.com,packagecloud.io,packages.cloud.google.com,packages.microsoft.com,pip.pypa.io,ppa.launchpad.net,pypi.org,pypi.python.org,raw.githubusercontent.com,registry.npmjs.org,repo.anaconda.com,repo.continuum.io,s.symcb.com,s.symcd.com,security.ubuntu.com,static.crates.io,techcrunch.com,telemetry.enterprise.githubcopilot.com,ts-crl.ws.symantec.com,ts-ocsp.ws.symantec.com,www.googleapis.com,www.infoq.com,www.producthunt.com,www.technologyreview.com,www.theverge.com,www.wired.com' --log-level info --proxy-logs-dir /tmp/gh-aw/sandbox/firewall/logs --audit-dir /tmp/gh-aw/sandbox/firewall/audit --enable-host-access --image-tag 0.25.20 --skip-pull --enable-api-proxy \
+          sudo -E awf --container-workdir "${GITHUB_WORKSPACE}" --mount "${RUNNER_TEMP}/gh-aw:${RUNNER_TEMP}/gh-aw:ro" --mount "${RUNNER_TEMP}/gh-aw:/host${RUNNER_TEMP}/gh-aw:ro" --env-all --exclude-env COPILOT_GITHUB_TOKEN --exclude-env GITHUB_MCP_SERVER_TOKEN --exclude-env MCP_GATEWAY_API_KEY --allow-domains '*.pythonhosted.org,anaconda.org,api.business.githubcopilot.com,api.enterprise.githubcopilot.com,api.github.com,api.githubcopilot.com,api.individual.githubcopilot.com,api.snapcraft.io,archive.ubuntu.com,aws.amazon.com,azure.archive.ubuntu.com,binstar.org,blog.cloudflare.com,blog.google,blogs.nvidia.com,bootstrap.pypa.io,claude.com,conda.anaconda.org,conda.binstar.org,crates.io,crl.geotrust.com,crl.globalsign.com,crl.identrust.com,crl.sectigo.com,crl.thawte.com,crl.usertrust.com,crl.verisign.com,crl3.digicert.com,crl4.digicert.com,crls.ssl.com,deepmind.google,dev.to,devblogs.microsoft.com,developer.apple.com,feed.infoq.com,feeds.arstechnica.com,files.pythonhosted.org,github.blog,github.com,host.docker.internal,huggingface.co,index.crates.io,json-schema.org,json.schemastore.org,keyserver.ubuntu.com,lobste.rs,news.ycombinator.com,ocsp.digicert.com,ocsp.geotrust.com,ocsp.globalsign.com,ocsp.identrust.com,ocsp.sectigo.com,ocsp.ssl.com,ocsp.thawte.com,ocsp.usertrust.com,ocsp.verisign.com,openai.com,packagecloud.io,packages.cloud.google.com,packages.microsoft.com,pip.pypa.io,ppa.launchpad.net,pypi.org,pypi.python.org,raw.githubusercontent.com,registry.npmjs.org,repo.anaconda.com,repo.continuum.io,s.symcb.com,s.symcd.com,security.ubuntu.com,static.crates.io,techcrunch.com,telemetry.enterprise.githubcopilot.com,ts-crl.ws.symantec.com,ts-ocsp.ws.symantec.com,www.anthropic.com,www.googleapis.com,www.infoq.com,www.producthunt.com,www.technologyreview.com,www.theverge.com,www.wired.com' --log-level info --proxy-logs-dir /tmp/gh-aw/sandbox/firewall/logs --audit-dir /tmp/gh-aw/sandbox/firewall/audit --enable-host-access --image-tag 0.25.20 --skip-pull --enable-api-proxy \
             -- /bin/bash -c 'node ${RUNNER_TEMP}/gh-aw/actions/copilot_driver.cjs /usr/local/bin/copilot --add-dir /tmp/gh-aw/ --log-level all --log-dir /tmp/gh-aw/sandbox/agent/logs/ --disable-builtin-mcps --no-ask-user --allow-all-tools --allow-all-paths --add-dir "${GITHUB_WORKSPACE}" --prompt "$(cat /tmp/gh-aw/aw-prompts/prompt.txt)"' 2>&1 | tee -a /tmp/gh-aw/agent-stdio.log
         env:
           COPILOT_AGENT_RUNNER_TYPE: STANDALONE
@@ -1109,7 +1109,7 @@ jobs:
         uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
         env:
           GH_AW_SAFE_OUTPUTS: ${{ steps.set-runtime-paths.outputs.GH_AW_SAFE_OUTPUTS }}
-          GH_AW_ALLOWED_DOMAINS: "*.pythonhosted.org,anaconda.org,api.business.githubcopilot.com,api.enterprise.githubcopilot.com,api.github.com,api.githubcopilot.com,api.individual.githubcopilot.com,api.snapcraft.io,archive.ubuntu.com,aws.amazon.com,azure.archive.ubuntu.com,binstar.org,blog.cloudflare.com,blog.google,blogs.nvidia.com,bootstrap.pypa.io,conda.anaconda.org,conda.binstar.org,crates.io,crl.geotrust.com,crl.globalsign.com,crl.identrust.com,crl.sectigo.com,crl.thawte.com,crl.usertrust.com,crl.verisign.com,crl3.digicert.com,crl4.digicert.com,crls.ssl.com,deepmind.google,dev.to,devblogs.microsoft.com,developer.apple.com,feed.infoq.com,feeds.arstechnica.com,files.pythonhosted.org,github.blog,github.com,host.docker.internal,huggingface.co,index.crates.io,json-schema.org,json.schemastore.org,keyserver.ubuntu.com,lobste.rs,news.ycombinator.com,ocsp.digicert.com,ocsp.geotrust.com,ocsp.globalsign.com,ocsp.identrust.com,ocsp.sectigo.com,ocsp.ssl.com,ocsp.thawte.com,ocsp.usertrust.com,ocsp.verisign.com,openai.com,packagecloud.io,packages.cloud.google.com,packages.microsoft.com,pip.pypa.io,ppa.launchpad.net,pypi.org,pypi.python.org,raw.githubusercontent.com,registry.npmjs.org,repo.anaconda.com,repo.continuum.io,s.symcb.com,s.symcd.com,security.ubuntu.com,static.crates.io,techcrunch.com,telemetry.enterprise.githubcopilot.com,ts-crl.ws.symantec.com,ts-ocsp.ws.symantec.com,www.googleapis.com,www.infoq.com,www.producthunt.com,www.technologyreview.com,www.theverge.com,www.wired.com"
+          GH_AW_ALLOWED_DOMAINS: "*.pythonhosted.org,anaconda.org,api.business.githubcopilot.com,api.enterprise.githubcopilot.com,api.github.com,api.githubcopilot.com,api.individual.githubcopilot.com,api.snapcraft.io,archive.ubuntu.com,aws.amazon.com,azure.archive.ubuntu.com,binstar.org,blog.cloudflare.com,blog.google,blogs.nvidia.com,bootstrap.pypa.io,claude.com,conda.anaconda.org,conda.binstar.org,crates.io,crl.geotrust.com,crl.globalsign.com,crl.identrust.com,crl.sectigo.com,crl.thawte.com,crl.usertrust.com,crl.verisign.com,crl3.digicert.com,crl4.digicert.com,crls.ssl.com,deepmind.google,dev.to,devblogs.microsoft.com,developer.apple.com,feed.infoq.com,feeds.arstechnica.com,files.pythonhosted.org,github.blog,github.com,host.docker.internal,huggingface.co,index.crates.io,json-schema.org,json.schemastore.org,keyserver.ubuntu.com,lobste.rs,news.ycombinator.com,ocsp.digicert.com,ocsp.geotrust.com,ocsp.globalsign.com,ocsp.identrust.com,ocsp.sectigo.com,ocsp.ssl.com,ocsp.thawte.com,ocsp.usertrust.com,ocsp.verisign.com,openai.com,packagecloud.io,packages.cloud.google.com,packages.microsoft.com,pip.pypa.io,ppa.launchpad.net,pypi.org,pypi.python.org,raw.githubusercontent.com,registry.npmjs.org,repo.anaconda.com,repo.continuum.io,s.symcb.com,s.symcd.com,security.ubuntu.com,static.crates.io,techcrunch.com,telemetry.enterprise.githubcopilot.com,ts-crl.ws.symantec.com,ts-ocsp.ws.symantec.com,www.anthropic.com,www.googleapis.com,www.infoq.com,www.producthunt.com,www.technologyreview.com,www.theverge.com,www.wired.com"
           GITHUB_SERVER_URL: ${{ github.server_url }}
           GITHUB_API_URL: ${{ github.api_url }}
         with:
@@ -1591,7 +1591,7 @@ jobs:
         uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553 # v9
         env:
           GH_AW_AGENT_OUTPUT: ${{ steps.setup-agent-output-env.outputs.GH_AW_AGENT_OUTPUT }}
-          GH_AW_ALLOWED_DOMAINS: "*.pythonhosted.org,anaconda.org,api.business.githubcopilot.com,api.enterprise.githubcopilot.com,api.github.com,api.githubcopilot.com,api.individual.githubcopilot.com,api.snapcraft.io,archive.ubuntu.com,aws.amazon.com,azure.archive.ubuntu.com,binstar.org,blog.cloudflare.com,blog.google,blogs.nvidia.com,bootstrap.pypa.io,conda.anaconda.org,conda.binstar.org,crates.io,crl.geotrust.com,crl.globalsign.com,crl.identrust.com,crl.sectigo.com,crl.thawte.com,crl.usertrust.com,crl.verisign.com,crl3.digicert.com,crl4.digicert.com,crls.ssl.com,deepmind.google,dev.to,devblogs.microsoft.com,developer.apple.com,feed.infoq.com,feeds.arstechnica.com,files.pythonhosted.org,github.blog,github.com,host.docker.internal,huggingface.co,index.crates.io,json-schema.org,json.schemastore.org,keyserver.ubuntu.com,lobste.rs,news.ycombinator.com,ocsp.digicert.com,ocsp.geotrust.com,ocsp.globalsign.com,ocsp.identrust.com,ocsp.sectigo.com,ocsp.ssl.com,ocsp.thawte.com,ocsp.usertrust.com,ocsp.verisign.com,openai.com,packagecloud.io,packages.cloud.google.com,packages.microsoft.com,pip.pypa.io,ppa.launchpad.net,pypi.org,pypi.python.org,raw.githubusercontent.com,registry.npmjs.org,repo.anaconda.com,repo.continuum.io,s.symcb.com,s.symcd.com,security.ubuntu.com,static.crates.io,techcrunch.com,telemetry.enterprise.githubcopilot.com,ts-crl.ws.symantec.com,ts-ocsp.ws.symantec.com,www.googleapis.com,www.infoq.com,www.producthunt.com,www.technologyreview.com,www.theverge.com,www.wired.com"
+          GH_AW_ALLOWED_DOMAINS: "*.pythonhosted.org,anaconda.org,api.business.githubcopilot.com,api.enterprise.githubcopilot.com,api.github.com,api.githubcopilot.com,api.individual.githubcopilot.com,api.snapcraft.io,archive.ubuntu.com,aws.amazon.com,azure.archive.ubuntu.com,binstar.org,blog.cloudflare.com,blog.google,blogs.nvidia.com,bootstrap.pypa.io,claude.com,conda.anaconda.org,conda.binstar.org,crates.io,crl.geotrust.com,crl.globalsign.com,crl.identrust.com,crl.sectigo.com,crl.thawte.com,crl.usertrust.com,crl.verisign.com,crl3.digicert.com,crl4.digicert.com,crls.ssl.com,deepmind.google,dev.to,devblogs.microsoft.com,developer.apple.com,feed.infoq.com,feeds.arstechnica.com,files.pythonhosted.org,github.blog,github.com,host.docker.internal,huggingface.co,index.crates.io,json-schema.org,json.schemastore.org,keyserver.ubuntu.com,lobste.rs,news.ycombinator.com,ocsp.digicert.com,ocsp.geotrust.com,ocsp.globalsign.com,ocsp.identrust.com,ocsp.sectigo.com,ocsp.ssl.com,ocsp.thawte.com,ocsp.usertrust.com,ocsp.verisign.com,openai.com,packagecloud.io,packages.cloud.google.com,packages.microsoft.com,pip.pypa.io,ppa.launchpad.net,pypi.org,pypi.python.org,raw.githubusercontent.com,registry.npmjs.org,repo.anaconda.com,repo.continuum.io,s.symcb.com,s.symcd.com,security.ubuntu.com,static.crates.io,techcrunch.com,telemetry.enterprise.githubcopilot.com,ts-crl.ws.symantec.com,ts-ocsp.ws.symantec.com,www.anthropic.com,www.googleapis.com,www.infoq.com,www.producthunt.com,www.technologyreview.com,www.theverge.com,www.wired.com"
           GITHUB_SERVER_URL: ${{ github.server_url }}
           GITHUB_API_URL: ${{ github.api_url }}
           GH_AW_SAFE_OUTPUTS_HANDLER_CONFIG: "{\"create_pull_request\":{\"labels\":[\"automation\",\"tech-insight\"],\"max\":1,\"max_patch_size\":1024,\"protected_files\":[\"package.json\",\"bun.lockb\",\"bunfig.toml\",\"deno.json\",\"deno.jsonc\",\"deno.lock\",\"global.json\",\"NuGet.Config\",\"Directory.Packages.props\",\"mix.exs\",\"mix.lock\",\"go.mod\",\"go.sum\",\"stack.yaml\",\"stack.yaml.lock\",\"pom.xml\",\"build.gradle\",\"build.gradle.kts\",\"settings.gradle\",\"settings.gradle.kts\",\"gradle.properties\",\"package-lock.json\",\"yarn.lock\",\"pnpm-lock.yaml\",\"npm-shrinkwrap.json\",\"requirements.txt\",\"Pipfile\",\"Pipfile.lock\",\"pyproject.toml\",\"setup.py\",\"setup.cfg\",\"Gemfile\",\"Gemfile.lock\",\"uv.lock\",\"CODEOWNERS\",\"AGENTS.md\"],\"protected_path_prefixes\":[\".github/\",\".agents/\"],\"title_prefix\":\"[tech-insight] \"},\"create_report_incomplete_issue\":{},\"missing_data\":{},\"missing_tool\":{},\"noop\":{\"max\":1,\"report-as-issue\":\"true\"},\"report_incomplete\":{}}"

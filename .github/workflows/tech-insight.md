@@ -35,6 +35,8 @@ network:
     - "www.infoq.com"
     - "lobste.rs"
     - "dev.to"
+    - "www.anthropic.com"
+    - "claude.com"
 safe-outputs:
   create-pull-request:
     title-prefix: "[tech-insight] "

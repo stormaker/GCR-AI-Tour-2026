@@ -168,5 +168,25 @@
     "source": "rss",
     "url": "https://dev.to/feed",
     "signal_level": "B"
+  },
+  {
+    "id": 21,
+    "name": "Anthropic News",
+    "platform": "anthropic-news",
+    "source": "sitemap",
+    "url": "https://www.anthropic.com/sitemap.xml",
+    "signal_level": "S",
+    "company": "Anthropic",
+    "include_keywords": ["Claude", "AI safety", "model", "agent"]
+  },
+  {
+    "id": 22,
+    "name": "Claude Blog",
+    "platform": "claude-blog",
+    "source": "html",
+    "url": "https://claude.com/blog",
+    "signal_level": "S",
+    "company": "Anthropic",
+    "include_keywords": ["Claude Code", "agent", "skills", "subagent", "enterprise"]
   }
 ]

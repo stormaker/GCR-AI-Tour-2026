@@ -152,6 +152,7 @@ def _derive_tracks(source: dict[str, Any]) -> list[str]:
             for x in [
                 "openai.com",
                 "anthropic.com",
+                "claude.com",
                 "deepmind.google",
                 "blog.google",
                 "blogs.microsoft.com",
@@ -281,7 +282,12 @@ def tech_fetch_all_to_disk(
     results: list[dict[str, Any]] = []
 
     headers = {
-        "User-Agent": "GCR-AI-Tour-2026/tech_insight_workflow (+https://github.com)"
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.5",
+        "Accept-Encoding": "gzip, deflate, br",
+        "DNT": "1",
+        "Connection": "keep-alive",
     }
 
     total = len(sources)
@@ -469,6 +475,121 @@ def _parse_sitemap_items(raw: str, *, max_items: int) -> list[dict[str, Any]]:
     return out
 
 
+def _parse_claude_blog_items(
+    raw: str, base_url: str = "https://claude.com", *, max_items: int
+) -> list[dict[str, Any]]:
+    """专用解析器：提取 claude.com/blog 的文章标题、URL、日期。
+
+    Claude Blog 是 Webflow 站点，文章卡片包含 h2/h3 标题和 /blog/ 链接。
+    标题和链接通常在不同元素中，需要通过共同父容器关联。
+    """
+    try:
+        from bs4 import BeautifulSoup  # type: ignore
+    except Exception as exc:
+        raise RuntimeError(
+            "Missing dependency: beautifulsoup4. Install with requirements.txt"
+        ) from exc
+
+    soup = BeautifulSoup(raw, "html.parser")
+    out: list[dict[str, Any]] = []
+    seen: set[str] = set()
+
+    # 策略：遍历文章卡片容器（article 或包含 blog/post/card 类的 div）
+    for card in soup.find_all(["article", "div", "li"]):
+        # 找标题
+        heading = card.find(["h2", "h3", "h4", "h5"])
+        if not heading:
+            continue
+
+        title = heading.get_text(strip=True)
+        if len(title) < 10:  # 过滤过短文本
+            continue
+
+        # 找 /blog/ 链接
+        link = card.find("a", href=re.compile(r"^/blog/"))
+        if not link:
+            continue
+
+        href = str(link.get("href", "")).strip()
+        if not href or href == "/blog" or href in seen:
+            continue
+        seen.add(href)
+
+        # 避免重复拼接 base_url
+        if href.startswith("http"):
+            url = href
+        else:
+            # base_url 可能是 https://claude.com/blog，href 是 /blog/xxx
+            # 需要避免重复 /blog
+            base = base_url.rstrip("/")
+            if base.endswith("/blog") and href.startswith("/blog/"):
+                url = f"https://claude.com{href}"
+            else:
+                url = f"{base}{href}"
+
+        # 提取日期
+        dt: datetime | None = None
+        time_elem = card.find("time")
+        if time_elem:
+            datetime_attr = time_elem.get("datetime", "")
+            if datetime_attr:
+                dt = _parse_datetime(datetime_attr)
+            if not dt:
+                dt = _parse_datetime(time_elem.get_text(strip=True))
+        else:
+            text = card.get_text(separator=" ", strip=True)
+            dt = _extract_date_from_text(text)
+
+        out.append({
+            "title": title,
+            "url": url,
+            "summary": "",
+            "published_dt": dt,
+        })
+
+        if len(out) >= max(1, int(max_items or 25)):
+            break
+
+    # 按日期降序排列
+    out.sort(
+        key=lambda x: x["published_dt"] or datetime(1970, 1, 1, tzinfo=timezone.utc),
+        reverse=True,
+    )
+
+    return out
+
+
+def _extract_date_from_text(text: str) -> datetime | None:
+    """从文本中提取常见英文日期格式。"""
+    if not text:
+        return None
+
+    patterns = [
+        # "April 20, 2026" or "Apr 16, 2026"
+        (r"\b([A-Za-z]{3,9})\s+(\d{1,2}),?\s+(\d{4})\b", "%B %d %Y"),
+        # "2026-04-20"
+        (r"\b(\d{4})-(\d{2})-(\d{2})\b", "%Y-%m-%d"),
+        # "20 April 2026"
+        (r"\b(\d{1,2})\s+([A-Za-z]{3,9})\s+(\d{4})\b", "%d %B %Y"),
+    ]
+
+    for regex, fmt in patterns:
+        match = re.search(regex, text)
+        if match:
+            date_str = match.group(0).replace(",", "")
+            try:
+                parsed = datetime.strptime(date_str, fmt)
+                return parsed.replace(tzinfo=timezone.utc)
+            except ValueError:
+                # 尝试缩写月份
+                try:
+                    parsed = datetime.strptime(date_str, fmt.replace("%B", "%b"))
+                    return parsed.replace(tzinfo=timezone.utc)
+                except ValueError:
+                    continue
+    return None
+
+
 def _parse_html_listing_items(
     raw: str, base_url: str, *, max_items: int
 ) -> list[dict[str, Any]]:
@@ -479,10 +600,14 @@ def _parse_html_listing_items(
             "Missing dependency: beautifulsoup4. Install with requirements.txt"
         ) from exc
 
+    # 对 claude.com/blog 使用专用解析器
+    base_dom = _domain(base_url)
+    if base_dom and "claude.com" in base_dom:
+        return _parse_claude_blog_items(raw, base_url, max_items=max_items)
+
     soup = BeautifulSoup(raw, "html.parser")
     links: list[tuple[str, str]] = []
 
-    base_dom = _domain(base_url)
     for a in soup.find_all("a"):
         href = a.get("href")
         if not href:
